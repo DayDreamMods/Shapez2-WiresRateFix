@@ -49,7 +49,6 @@ jobs:
           mkdir ${{inputs.name}}
           OptionalCompile='<Compile Include="../dotnet-common/FS/Utils.fs" />'
           echo "languageExtension=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '.fs' || echo '.cs')" >> $GITHUB_OUTPUT
-          echo "languageOptionalCompile=$([[ '${{ inputs.language }}' == 'F#' ]] && echo $OptionalCompile || echo '')" >> $GITHUB_OUTPUT
 
       - uses: 1arp/create-a-file-action@0.4.5
         with:
@@ -80,10 +79,10 @@ jobs:
                 <ItemGroup Label="References">
                     <ShoddyReference Include="$(GameManagedPath)Assembly.dll"/>
                 </ItemGroup>
-
-                <ItemGroup>
+                
+                <ItemGroup Label="F# Compile Order" Condition="'${{steps.run.outputs.languageExtension}}' =='.fs'">
+                    <Compile Include="../dotnet-common/FS/Utils.fs" />
                     <Compile Include="${{inputs.name}}Plugin${{steps.run.outputs.languageExtension}}" />
-                    ${{steps.run.outputs.languageOptionalCompile}}
                 </ItemGroup>
 
                 <Import Project="../dotnet-common/MSBuild/BepInEx5.props" />

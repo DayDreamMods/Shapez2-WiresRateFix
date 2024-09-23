@@ -52,6 +52,22 @@ jobs:
             cp "./.github/watermarked-logo.png" "./${{inputs.name}}/icon.png"
           fi
           echo "languageExtension=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '.fs' || echo '.cs')" >> $GITHUB_OUTPUT
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const readmePath = path.join(process.cwd(), './README.md');
+            const readmeContent = fs.readFileSync(readmePath, 'utf-8');
+            let readmeLines = readmeContent.split('\n');
+
+            readmeLines[0] = "# ${{inputs.name}}";
+            readmeLines[1] = "${{github.event.repository.description}}";
+            const newReadmeContent = readmeLines.join('\n');
+            fs.writeFileSync(readmePath, newReadmeContent);
+
+            console.log("README.md has been updated.");
 
       - uses: 1arp/create-a-file-action@0.4.5
         with:

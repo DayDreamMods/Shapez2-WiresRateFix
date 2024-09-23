@@ -15,6 +15,7 @@ jobs:
         with:
           submodules: true
           fetch-tags: true
+          fetch-depth: 0
       - uses: actions/setup-dotnet@v4
       - id: run
         run: |

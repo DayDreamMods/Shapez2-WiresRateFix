@@ -191,7 +191,7 @@ jobs:
           git checkout ${{env.pr-branch}} 2>/dev/null || git checkout -b ${{env.pr-branch}}
           git add .
           git commit -m "Added initial SLN & ${{steps.run.outputs.languageExtension}}proj"
-          git tag v0.0.1
+          git tag v1.0.0
           git push --set-upstream origin ${{env.pr-branch}}  --tags
           gh pr create --base ${{ github.event.repository.default_branch }} --head ${{env.pr-branch}} --title "Setup BepInEx5 ${{inputs.language}} Project" --body "" || echo "PR already exists or another error occurred"
           gh pr view --json url -t '{{.url}}' >> $GITHUB_STEP_SUMMARY

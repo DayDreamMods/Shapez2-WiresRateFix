@@ -7,7 +7,7 @@ jobs:
   publish-it:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{github.token}}
     steps:
       - id: run
         run: |
@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          merge-multiple: true
           run-id: ${{steps.run.outputs.LATEST_RUNID}}
+          github-token: ${{github.token}}
         
       - run: ls -R

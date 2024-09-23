@@ -80,7 +80,7 @@ jobs:
                     <ShoddyReference Include="$(GameManagedPath)Assembly.dll"/>
                 </ItemGroup>
                 
-                <ItemGroup Label="F# Compile Order" Condition="'${{steps.run.outputs.languageExtension}}' =='.fs'">
+                <ItemGroup Label="F# Compile Order" Condition="'${{steps.run.outputs.languageExtension}}' == '.fs'">
                     <Compile Include="../dotnet-common/FS/Utils.fs" />
                     <Compile Include="${{inputs.name}}Plugin${{steps.run.outputs.languageExtension}}" />
                 </ItemGroup>

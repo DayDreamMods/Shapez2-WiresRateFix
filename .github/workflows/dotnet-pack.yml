@@ -25,10 +25,12 @@ jobs:
           github-token: ${{ secrets.ORG_PAT }}
           script: |
             var pkgs = ("${{steps.run.outputs.last_line}}").split(';');
-            if pkgs.length >= 1:
+            if (pkgs.length >= 1) {
               core.setOutput('NUPKG', pkgs[0]);
-            if pkgs.length >= 2:
+            }
+            if (pkgs.length >= 2) {
               core.setOutput('TSPKG', pkgs[1]);
+            }
       - uses: actions/upload-artifact@v4
         with:
           name: NUPKG

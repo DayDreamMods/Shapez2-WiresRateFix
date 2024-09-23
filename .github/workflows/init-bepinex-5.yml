@@ -49,7 +49,7 @@ jobs:
           mkdir ${{inputs.name}}
           OptionalCompile='\n        <Compile Include="../dotnet-common/FS/Utils.fs" />'
           echo "languageExtension=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '.fs' || echo '.cs')" >> $GITHUB_OUTPUT
-          echo "languageOptionalCompile=$([[ '${{ inputs.language }}' == 'F#' ]] && echo $OptionalCompile || echo '')" >> $GITHUB_OUTPUT
+          echo "languageOptionalCompile=$([[ '${{ inputs.language }}' == 'F#' ]] && echo -e $OptionalCompile || echo '')" >> $GITHUB_OUTPUT
 
       - uses: 1arp/create-a-file-action@0.4.5
         with:

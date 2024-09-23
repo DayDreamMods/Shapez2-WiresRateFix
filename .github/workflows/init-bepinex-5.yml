@@ -13,6 +13,11 @@ on:
         default: 'netstandard2.1'
         required: false
         type: string
+      commonUnityVersion:
+        description: 'Unity Reference version.'
+        default: '202x.x.x'
+        required: false
+        type: string
       name:
         description: 'The name of the solution and project.'
         type: string
@@ -56,10 +61,10 @@ jobs:
                     <BuildFromGameLibs>false</BuildFromGameLibs>
 
                     <GameManagedPath>$(STEAMAPPS)Game/Game_Data/Managed/</GameManagedPath>
-                    <CommonUnityVersion>202x.x.x</CommonUnityVersion>
+                    <CommonUnityVersion>${{inputs.commonUnityVersion}}</CommonUnityVersion>
                 
-                    <PackageAuthor>www_Day_Dream</PackageAuthor>
-                    <PackageRepoUrl>https://github.com/wwwDayDream/</PackageRepoUrl>
+                    <PackageAuthor>${{vars.TCLI_USERNAME}}</PackageAuthor>
+                    <PackageRepoUrl>${{github.repositoryUrl}}</PackageRepoUrl>
                 </PropertyGroup>
                 <ItemGroup>
                     <PackageCommunities Include="community"/>
@@ -156,6 +161,7 @@ jobs:
             }
 
       - env:
+          GH_TOKEN: ${{ github.token }}
           pr-branch: added/initial/bepinex5
         run: |
           dotnet sln add "./${{inputs.name}}/${{inputs.name}}${{steps.run.outputs.languageExtension}}proj"

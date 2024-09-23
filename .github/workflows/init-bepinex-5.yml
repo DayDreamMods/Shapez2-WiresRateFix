@@ -36,6 +36,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+      - run: |
+          apt-get install tree
+          tree
       - uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -45,6 +48,9 @@ jobs:
       - uses: actions/setup-dotnet@v4
       - id: run
         run: |
+          if [ -f "" ]; then
+            cp "source_file_path" "destination_path"
+          fi
           dotnet new solution --name '${{inputs.name}}'
           mkdir ${{inputs.name}}
           OptionalCompile='<Compile Include="../dotnet-common/FS/Utils.fs" />'

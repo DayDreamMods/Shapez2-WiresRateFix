@@ -47,8 +47,9 @@ jobs:
         run: |
           dotnet new solution --name '${{inputs.name}}'
           mkdir ${{inputs.name}}
+          optionalCompile=$(echo '<Compile Include="../dotnet-common/FS/Utils.fs" />')
           echo "languageExtension=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '.fs' || echo '.cs')" >> $GITHUB_OUTPUT
-          echo "languageOptionalCompile=$([[ '${{ inputs.language }}' == 'F#' ]] && printf '\n        <Compile Include="../dotnet-common/FS/Utils.fs" />' || echo '')" >> $GITHUB_OUTPUT
+          echo "languageOptionalCompile=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '$optionalCompile' || echo '')" >> $GITHUB_OUTPUT
 
       - uses: 1arp/create-a-file-action@0.4.5
         with:

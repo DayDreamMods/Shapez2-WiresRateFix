@@ -15,7 +15,12 @@ on:
         type: string
       commonUnityVersion:
         description: 'Unity Reference version.'
-        default: '202x.x.x'
+        default: '2022.3.10'
+        required: false
+        type: string
+      gameSteamFolderName:
+        description: 'The game name underneath your $(STEAMAPPS) dir.'
+        default: 'Game'
         required: false
         type: string
       name:
@@ -57,14 +62,14 @@ jobs:
                     <GenerateDocumentationFile>true</GenerateDocumentationFile>
                     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-                    <BuildGameLibs>false</BuildGameLibs>
+                    <BuildGameLibs>true</BuildGameLibs>
                     <BuildFromGameLibs>false</BuildFromGameLibs>
 
-                    <GameManagedPath>$(STEAMAPPS)Game/Game_Data/Managed/</GameManagedPath>
+                    <GameManagedPath>$(STEAMAPPS)${{inputs.gameSteamFolderName}}/${{inputs.gameSteamFolderName}}_Data/Managed/</GameManagedPath>
                     <CommonUnityVersion>${{inputs.commonUnityVersion}}</CommonUnityVersion>
                 
                     <PackageAuthor>${{vars.TCLI_USERNAME}}</PackageAuthor>
-                    <PackageRepoUrl>${{github.repositoryUrl}}</PackageRepoUrl>
+                    <PackageRepoUrl>https://github.com/${{github.repository}}</PackageRepoUrl>
                 </PropertyGroup>
                 <ItemGroup>
                     <PackageCommunities Include="community"/>
@@ -86,12 +91,11 @@ jobs:
                 <Import Project="../dotnet-common/MSBuild/ShoddyGameLibs.lite.targets" />
             </Project>
 
-      - run: echo $(cat "${{inputs.name}}/${{inputs.name}}${{steps.run.outputs.languageExtension}}proj")
       - uses: 1arp/create-a-file-action@0.4.5
         if: ${{steps.run.outputs.languageExtension == '.fs'}}
         with:
           path: '${{inputs.name}}/'
-          file: '${{inputs.name}}Plugin${{steps.run.outputs.languageExtension}}'
+          file: '${{inputs.name}}Plugin.fs'
           content: |
             namespace ${{inputs.name}}
 
@@ -131,7 +135,7 @@ jobs:
         if: ${{steps.run.outputs.languageExtension == '.cs'}}
         with:
           path: '${{inputs.name}}/'
-          file: '${{inputs.name}}Plugin${{steps.run.outputs.languageExtension}}'
+          file: '${{inputs.name}}Plugin.cs'
           content: |
             using BepInEx;
             using HarmonyLib;

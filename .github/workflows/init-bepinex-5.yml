@@ -36,7 +36,7 @@ jobs:
           dotnet new solution --name '${{inputs.name}}'
           mkdir ${{inputs.name}}
           echo "languageExtension=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '.fs' || echo '.cs')" >> $GITHUB_OUTPUT
-          echo "languageOptionalCompile=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '\n\t\t<Compile Include=""../dotnet-common/FS/Utils.fs""; />' || echo '')" >> $GITHUB_OUTPUT
+          echo "languageOptionalCompile=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '\n\t\t<Compile Include="../dotnet-common/FS/Utils.fs"; />' || echo '')" >> $GITHUB_OUTPUT
 
       - uses: 1arp/create-a-file-action@0.4.5
         with:
@@ -69,7 +69,7 @@ jobs:
             \t</ItemGroup>
 
             \t<ItemGroup>${{steps.run.outputs.languageOptionalCompile}}
-            \t\t<Compile Include="${{inputs.name}}Plugin.${{steps.run.outputs.languageExtension}}" />
+            \t\t<Compile Include="${{inputs.name}}Plugin${{steps.run.outputs.languageExtension}}" />
             \t</ItemGroup>
 
             \t<Import Project="../dotnet-common/MSBuild/BepInEx5.props" />
@@ -161,15 +161,3 @@ jobs:
           git push --set-upstream origin ${{env.pr-branch}}
           gh pr create --base ${{ github.repository.default_branch }} --head ${{env.pr-branch}} --title "Setup BepInEx5 ${{inputs.language}} Project" --body "" || echo "PR already exists or another error occurred"
           gh pr view --json url -t '{{.url}}' >> $GITHUB_STEP_SUMMARY
-    name: Branch Name
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Run Branch Naming Policy Action
-        uses: nicklegan/github-repo-branch-naming-policy-action@v1.1.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          regex: '(?:(?:(?:added){1}|(?:changed){1}|(?:deprecated){1}|(?:removed){1}|(?:fixed){1}|(?:secured){1}|(?:updated){1})(\/[a-z\d-]+)+|(main))$'

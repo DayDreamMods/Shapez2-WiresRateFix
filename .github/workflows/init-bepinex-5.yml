@@ -47,7 +47,7 @@ jobs:
         run: |
           dotnet new solution --name '${{inputs.name}}'
           mkdir ${{inputs.name}}
-          OptionalCompile=$(echo -e '\n        <Compile Include="../dotnet-common/FS/Utils.fs" />')
+          OptionalCompile='<Compile Include="../dotnet-common/FS/Utils.fs" />'
           echo "languageExtension=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '.fs' || echo '.cs')" >> $GITHUB_OUTPUT
           echo "languageOptionalCompile=$([[ '${{ inputs.language }}' == 'F#' ]] && echo $OptionalCompile || echo '')" >> $GITHUB_OUTPUT
 
@@ -81,8 +81,9 @@ jobs:
                     <ShoddyReference Include="$(GameManagedPath)Assembly.dll"/>
                 </ItemGroup>
 
-                <ItemGroup>${{steps.run.outputs.languageOptionalCompile}}
+                <ItemGroup>
                     <Compile Include="${{inputs.name}}Plugin${{steps.run.outputs.languageExtension}}" />
+                    ${{steps.run.outputs.languageOptionalCompile}}
                 </ItemGroup>
 
                 <Import Project="../dotnet-common/MSBuild/BepInEx5.props" />

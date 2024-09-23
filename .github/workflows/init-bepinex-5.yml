@@ -75,10 +75,10 @@ jobs:
                 </ItemGroup>
 
                 <Import Project="../dotnet-common/MSBuild/BepInEx5.props" />
-                <Import Project="../dotnet-common/Common.targets" />
-                <Import Project="../dotnet-common/PluginInfoProps.FS.targets" />
-                <Import Project="../dotnet-common/Packaging.TCLI.targets" />
-                <Import Project="../dotnet-common/ShoddyGameLibs.lite.targets" />
+                <Import Project="../dotnet-common/MSBuild/Common.targets" />
+                <Import Project="../dotnet-common/MSBuild/PluginInfoProps.FS.targets" />
+                <Import Project="../dotnet-common/MSBuild/Packaging.TCLI.targets" />
+                <Import Project="../dotnet-common/MSBuild/ShoddyGameLibs.lite.targets" />
             </Project>
 
       - run: echo $(cat "${{inputs.name}}/${{inputs.name}}${{steps.run.outputs.languageExtension}}proj")

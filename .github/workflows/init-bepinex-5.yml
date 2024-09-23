@@ -160,7 +160,7 @@ jobs:
                         var patchedMethodCount = ${{inputs.name}}.Patcher.GetPatchedMethods().Count();
                         var patchedMethodSuffix = patchedMethodCount == 1 ? "" : "s";
 
-                        ${{inputs.name}}.Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded! Successfully patched {patchedMethodCount} method{patchedMethodSuffix}.")
+                        ${{inputs.name}}.Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded! Successfully patched {patchedMethodCount} method{patchedMethodSuffix}.");
                     }
                 }
             }

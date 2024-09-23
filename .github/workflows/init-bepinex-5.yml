@@ -1,0 +1,177 @@
+name: "[Init] Bepinex 5"
+
+on:
+  workflow_dispatch:
+    inputs:
+      language:
+        description: 'F# | C#'
+        default: 'F#'
+        required: false
+        type: string
+      framework:
+        description: 'The framework to assign to the new project.'
+        default: 'netstandard2.1'
+        required: false
+        type: string
+      name:
+        description: 'The name of the solution and project.'
+        type: string
+
+jobs:
+  setup_files:
+    name: Setup Core Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_SIGNING_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+      - uses: actions/setup-dotnet@v4
+      - id: run
+        run: |
+          dotnet new solution --name '${{inputs.name}}'
+          mkdir ${{inputs.name}}
+          echo "languageExtension=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '.fs' || echo '.cs')" >> $GITHUB_OUTPUT
+          echo "languageOptionalCompile=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '\n\t\t<Compile Include=&quot;../dotnet-common/FS/Utils.fs&quot; />' || echo '')" >> $GITHUB_OUTPUT
+
+      - uses: 1arp/create-a-file-action@0.4.5
+        with:
+          path: '${{inputs.name}}/'
+          file: '${{inputs.name}}${{steps.run.outputs.languageExtension}}proj'
+          content: |
+            <Project Sdk="Microsoft.NET.Sdk">
+            \t<PropertyGroup>
+            \t\t<TargetFramework>${{inputs.framework}}</TargetFramework>
+            \t\t<RootNamespace>${{inputs.name}}</RootNamespace>
+            \t\t<GenerateDocumentationFile>true</GenerateDocumentationFile>
+            \t\t<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+            \t\t<BuildGameLibs>false</BuildGameLibs>
+            \t\t<BuildFromGameLibs>false</BuildFromGameLibs>
+
+            \t\t<GameManagedPath>$(STEAMAPPS)Game/Game_Data/Managed/</GameManagedPath>
+            \t\t<CommonUnityVersion>202x.x.x</CommonUnityVersion>
+                
+            \t\t<PackageAuthor>www_Day_Dream</PackageAuthor>
+            \t\t<PackageRepoUrl>https://github.com/wwwDayDream/</PackageRepoUrl>
+            \t</PropertyGroup>
+            \t<ItemGroup>
+            \t\t<PackageCommunities Include="community"/>
+            \t\t<PackageCommunityCategories Include="community"><Value>Mod</Value></PackageCommunityCategories>
+            \t</ItemGroup>
+
+            \t<ItemGroup Label="References">
+            \t\t<ShoddyReference Include="$(GameManagedPath)Assembly.dll"/>
+            \t</ItemGroup>
+
+            \t<ItemGroup>${{steps.run.outputs.languageOptionalCompile}}
+            \t\t<Compile Include="${{inputs.name}}Plugin.${{steps.run.outputs.languageExtension}}" />
+            \t</ItemGroup>
+
+            \t<Import Project="../dotnet-common/MSBuild/BepInEx5.props" />
+            \t<Import Project="../dotnet-common/Common.targets" />
+            \t<Import Project="../dotnet-common/PluginInfoProps.FS.targets" />
+            \t<Import Project="../dotnet-common/Packaging.TCLI.targets" />
+            \t<Import Project="../dotnet-common/ShoddyGameLibs.lite.targets" />
+            </Project>
+
+      - uses: 1arp/create-a-file-action@0.4.5
+        if: ${{steps.run.outputs.languageExtension == '.fs'}}
+        with:
+          path: '${{inputs.name}}/'
+          file: '${{inputs.name}}Plugin${{steps.run.outputs.languageExtension}}'
+          content: |
+            namespace ${{inputs.name}}
+
+            open BepInEx
+            open HarmonyLib
+            open BepInEx.Logging
+            open Utils.Operators
+
+            module ${{inputs.name}} =
+            \tlet mutable internal Plugin: BaseUnityPlugin option = None
+            \tlet mutable internal Logger: ManualLogSource option = None
+            \tlet mutable internal Patcher: Harmony option = None
+            open ${{inputs.name}}
+
+            [<BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)>]
+            type ${{inputs.name}}Plugin() =
+            \tinherit BaseUnityPlugin()
+
+            \tmember this.Awake() =
+            \t\tPlugin <- Some this
+            \t\tLogger <- Some this.Logger
+            \t\tPatcher <- Harmony(this.Info.Metadata.GUID) |> Some
+
+            \t\t-optional {
+            \t\t\tlet! patcher = Patcher
+            \t\t\tlet! logger = Logger
+            \t\t\tpatcher.PatchAll()
+            \t\t\tlet patchedMethodCount = patcher.GetPatchedMethods() |> Array.ofSeq |> (_.Length)
+            \t\t\tlet patchedMethodSuffix = if patchedMethodCount = 1 then "" else "s"
+            \t\t\tdo 
+            \t\t\t\t$"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded! Successfully patched {patchedMethodCount} method{patchedMethodSuffix}."
+            \t\t\t\t|> logger.LogInfo
+            \t\t\treturn ()
+            \t\t}
+
+      - uses: 1arp/create-a-file-action@0.4.5
+        if: ${{steps.run.outputs.languageExtension == '.cs'}}
+        with:
+          path: '${{inputs.name}}/'
+          file: '${{inputs.name}}Plugin${{steps.run.outputs.languageExtension}}'
+          content: |
+            using BepInEx;
+            using HarmonyLib;
+            using BepInEx.Logging;
+            using System.Linq;
+
+            namespace ${{inputs.name}} {
+            \tstatic class ${{inputs.name}} {
+            \t\tinternal static BaseUnityPlugin Plugin;
+            \t\tinternal static ManualLogSource Logger;
+            \t\tinternal static Harmony Patcher;
+            \t}
+            \t[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+            \tclass ${{inputs.name}}Plugin : BaseUnityPlugin {
+            \t\tvoid Awake() {
+            \t\t\t${{inputs.name}}.Plugin = this;
+            \t\t\t${{inputs.name}}.Logger = this.Logger;
+            \t\t\t${{inputs.name}}.Patcher = new Harmony(this.Info.Metadata.GUID);
+
+            \t\t\t${{inputs.name}}.Patcher.PatchAll();
+            \t\t\tvar patchedMethodCount = ${{inputs.name}}.Patcher.GetPatchedMethods().Count();
+            \t\t\tvar patchedMethodSuffix = patchedMethodCount == 1 ? "" : "s";
+
+            \t\t\t${{inputs.name}}.Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded! Successfully patched {patchedMethodCount} method{patchedMethodSuffix}.")
+            \t\t}
+            \t}
+            }
+
+      - env:
+          pr-branch: added/initial/bepinex5
+        run: |
+          dotnet sln add "./${{inputs.name}}/${{inputs.name}}${{steps.run.outputs.languageExtension}}proj"
+          git checkout ${{env.pr-branch}} 2>/dev/null || git checkout -b ${{env.pr-branch}}
+          git commit -am "Added initial SLN & ${{steps.run.outputs.languageExtension}}proj"
+          git push --set-upstream origin ${{env.pr-branch}}
+          gh pr create --base ${{ github.repository.default_branch }} --head ${{env.pr-branch}} --title "Setup BepInEx5 ${{inputs.language}} Project" --body "" || echo "PR already exists or another error occurred"
+          gh pr view --json url -t '{{.url}}' >> $GITHUB_STEP_SUMMARY
+
+  branch-naming-policy:
+    name: Branch Name
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Branch Naming Policy Action
+        uses: nicklegan/github-repo-branch-naming-policy-action@v1.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          regex: '(?:(?:(?:added){1}|(?:changed){1}|(?:deprecated){1}|(?:removed){1}|(?:fixed){1}|(?:secured){1}|(?:updated){1})(\/[a-z\d-]+)+|(main))$'

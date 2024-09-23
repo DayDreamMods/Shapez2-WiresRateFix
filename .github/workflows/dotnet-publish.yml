@@ -10,5 +10,5 @@ jobs:
         GH_TOKEN: ${{ github.token }}
     steps:
         - run: |
-            RUNID=$(gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs)
+            RUNID=$(gh api repos/${{github.repository}}/commits/${{github.sha}}/check-runs)
             echo "$RUNID"

@@ -24,7 +24,7 @@ jobs:
         with:
           github-token: ${{ secrets.ORG_PAT }}
           script: |
-            let pkgs = "${{steps.run.outputs.last_line}}".split(';');
+            var pkgs = ("${{steps.run.outputs.last_line}}").split(';');
             if pkgs.length >= 1:
               core.setOutput('NUPKG', pkgs[0]);
             if pkgs.length >= 2:

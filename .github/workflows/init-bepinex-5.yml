@@ -169,5 +169,5 @@ jobs:
           git add .
           git commit -m "Added initial SLN & ${{steps.run.outputs.languageExtension}}proj"
           git push --set-upstream origin ${{env.pr-branch}}
-          gh pr create --base ${{ github.repository.default_branch }} --head "${{env.pr-branch}}" --title "Setup BepInEx5 ${{inputs.language}} Project" --body "" || echo "PR already exists or another error occurred"
+          gh pr create --base ${{ github.event.repository.default_branch }} --head ${{env.pr-branch}} --title "Setup BepInEx5 ${{inputs.language}} Project" --body "" || echo "PR already exists or another error occurred"
           gh pr view --json url -t '{{.url}}' >> $GITHUB_STEP_SUMMARY

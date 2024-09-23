@@ -1,0 +1,12 @@
+name: "Donet Publish"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-it:
+    runs-on: ubuntu-latest
+    steps:
+        - run: |
+            RUNID=$(gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA/check-runs | jq -r '.check_runs[] | select(.name == "dotnet-pack") | .html_url | capture("/runs/(?<number>[0-9]+)/job") | .number' | sed 's/"//g' | head -n 1)
+            echo "$RUNID"

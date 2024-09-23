@@ -167,7 +167,7 @@ jobs:
           dotnet sln add "./${{inputs.name}}/${{inputs.name}}${{steps.run.outputs.languageExtension}}proj"
           git checkout ${{env.pr-branch}} 2>/dev/null || git checkout -b ${{env.pr-branch}}
           git add .
-          git commit -am "Added initial SLN & ${{steps.run.outputs.languageExtension}}proj"
+          git commit -m "Added initial SLN & ${{steps.run.outputs.languageExtension}}proj"
           git push --set-upstream origin ${{env.pr-branch}}
-          gh pr create --base ${{ github.repository.default_branch }} --head ${{env.pr-branch}} --title "Setup BepInEx5 ${{inputs.language}} Project" --body "" || echo "PR already exists or another error occurred"
+          gh pr create --base ${{ github.repository.default_branch }} --head "${{env.pr-branch}}" --title "Setup BepInEx5 ${{inputs.language}} Project" --body "" || echo "PR already exists or another error occurred"
           gh pr view --json url -t '{{.url}}' >> $GITHUB_STEP_SUMMARY

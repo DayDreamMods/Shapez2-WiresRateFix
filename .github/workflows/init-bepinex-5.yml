@@ -77,7 +77,7 @@ jobs:
                 </ItemGroup>
 
                 <ItemGroup Label="References">
-                    <ShoddyReference Include="$(GameManagedPath)Assembly.dll"/>
+                    <!-- <ShoddyReference Include="$(GameManagedPath)Assembly.dll"/> -->
                 </ItemGroup>
                 
                 <ItemGroup Label="F# Compile Order" Condition="'${{steps.run.outputs.languageExtension}}' == '.fs'">

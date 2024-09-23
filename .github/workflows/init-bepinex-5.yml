@@ -46,12 +46,11 @@ jobs:
       - uses: actions/setup-dotnet@v4
       - id: run
         run: |
-          if [ -f "" ]; then
-            cp "source_file_path" "destination_path"
-          fi
           dotnet new solution --name '${{inputs.name}}'
           mkdir ${{inputs.name}}
-          OptionalCompile='<Compile Include="../dotnet-common/FS/Utils.fs" />'
+          if [ -f "./.github/watermarked-logo.png" ]; then
+            cp "./.github/watermarked-logo.png" "./${{inputs.name}}/icon.png"
+          fi
           echo "languageExtension=$([[ '${{ inputs.language }}' == 'F#' ]] && echo '.fs' || echo '.cs')" >> $GITHUB_OUTPUT
 
       - uses: 1arp/create-a-file-action@0.4.5

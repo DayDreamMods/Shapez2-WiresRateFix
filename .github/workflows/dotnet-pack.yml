@@ -35,6 +35,9 @@ jobs:
             if (pkgs.length >= 2) {
               core.setOutput('TSPKG', pkgs[1]);
             }
+            if (pkgs.length >= 3) {
+              core.setOutput('TOML', pkgs[2]);
+            }
       - uses: actions/upload-artifact@v4
         with:
           name: NUPKG
@@ -42,4 +45,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: TSPKG
-          path: ${{steps.files.outputs.TSPKG}}
+          path: |
+            ${{steps.files.outputs.TSPKG}}
+            ${{steps.files.outputs.TOML}}
+ 

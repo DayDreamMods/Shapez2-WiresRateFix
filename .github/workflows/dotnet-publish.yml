@@ -32,12 +32,12 @@ jobs:
 
       - if: ${{github.event.release.prerelease == false}}
         run: |
-          dotnet nuget push NUPKG/*.nupkg --api-key XX --source https://api.nuget.org/v3/index.json
+          dotnet nuget push NUPKG/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
       - name: Publishing to Thunderstore
         if: ${{github.event.release.prerelease == false}}
         env:
-          TCLI_AUTH_TOKEN: XX
+          TCLI_AUTH_TOKEN: ${{ secrets.TCLI_API_TOKEN }}
         run: |
           dotnet tcli publish --config-path TOML/*.toml --file TSPKG/*.zip
           

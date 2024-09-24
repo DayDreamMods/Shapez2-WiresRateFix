@@ -45,7 +45,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: TSPKG
-          path: |
-            ${{steps.files.outputs.TSPKG}}
-            ${{steps.files.outputs.TOML}}
+          path: ${{steps.files.outputs.TSPKG}}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TOML
+          path: ${{steps.files.outputs.TOML}}
  

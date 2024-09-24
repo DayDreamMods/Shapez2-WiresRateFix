@@ -30,10 +30,6 @@ jobs:
         run: |
           gh release upload ${{ github.event.release.tag_name }} TSPKG/*.zip NUPKG/*.nupkg
 
-      - if: ${{github.event.release.prerelease == false}}
-        run: |
-          dotnet nuget push NUPKG/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-
       - name: Publishing to Thunderstore
         if: ${{github.event.release.prerelease == false}}
         env:

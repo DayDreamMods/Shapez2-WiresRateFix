@@ -9,20 +9,25 @@ jobs:
     if: github.event.repository.is_template == false && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     name: Package .NET
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{github.token}}
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Full Repository Checkout
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-tags: true
           fetch-depth: 0
-      - uses: actions/setup-dotnet@v4
-      - id: run
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+      - name: Build & Package
+        id: run
         run: |
           dotnet pack --configuration Release | tee output.log
           last_line=$(tail -n 1 output.log)
           echo "last_line=$last_line" >> $GITHUB_OUTPUT
-      - name: Files As Array
+      - name: Format Build Output
         id: files
         uses: actions/github-script@v7
         with:
@@ -51,7 +56,8 @@ jobs:
           name: TOML
           path: ${{steps.files.outputs.TOML}}
       
-      - run: |
+      - name: Update vars.PACKAGE_RUNID
+        run: |
           gh api --method PATCH \
             -H "Accept: application/vnd.github.v3+json" \
             /repos/$GITHUB_REPOSITORY/actions/variables \

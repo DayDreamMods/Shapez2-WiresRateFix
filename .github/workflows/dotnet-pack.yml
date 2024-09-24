@@ -10,7 +10,7 @@ jobs:
     name: Package .NET
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{github.token}}
+      GH_TOKEN: ${{secrets.ORG_PAT}}
     
     steps:
       - name: Full Repository Checkout

@@ -50,4 +50,10 @@ jobs:
         with:
           name: TOML
           path: ${{steps.files.outputs.TOML}}
+      
+      - run: |
+          gh api --method PATCH \
+            -H "Accept: application/vnd.github.v3+json" \
+            /repos/$GITHUB_REPOSITORY/actions/variables \
+            -f name="PACKAGE_RUNID" -f value="${{github.run_id}}"
  

@@ -2,6 +2,8 @@ name: "Donet Publish"
 
 on:
   workflow_dispatch:
+  release:
+    types: [released, prereleased]
 
 jobs:
   publish-it:
@@ -18,5 +20,25 @@ jobs:
         with:
           run-id: ${{steps.run.outputs.LATEST_RUNID}}
           github-token: ${{github.token}}
-        
-      - run: ls -R
+      - uses: actions/setup-dotnet@v4
+
+      - run: |
+          dotnet nuget add source --username ${{github.repository_owner}} --password $GH_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{github.repository_owner}}/index.json"
+          dotnet nuget push NUPKG/*.nupkg --api-key $GH_TOKEN --source "github"
+      
+      - if: ${{github.event_name == 'release'}}
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} TSPKG/*.zip NUPKG/*.nupkg
+
+      - if: ${{github.event.release.prerelease == false}}
+        run: |
+          dotnet nuget push NUPKG/*.nupkg --api-key XX --source https://api.nuget.org/v3/index.json
+
+      - name: Publishing to Thunderstore
+        if: ${{github.event.release.prerelease == false}}
+        env:
+          TCLI_AUTH_TOKEN: XX
+        run: |
+          dotnet tcli publish --config-path TOML/*.toml --file TSPKG/*.zip
+          
+      

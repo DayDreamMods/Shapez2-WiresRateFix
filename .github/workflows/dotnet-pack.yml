@@ -55,28 +55,3 @@ jobs:
         with:
           name: TOML
           path: ${{steps.files.outputs.TOML}}
-
-      - name: Check If vars.PACKAGE_RUNID Exists
-        id: check_var
-        run: |
-          gh api \
-            -H "Accept: application/vnd.github.v3+json" \
-            /repos/${{github.repository}}/actions/variables | grep '"name": "MY_VARIABLE"'
-        continue-on-error: true
-      
-      - name: Create vars.PACKAGE_RUNID
-        if: ${{ failure() }}
-        run: |
-          gh api --method POST \
-            -H "Accept: application/vnd.github.v3+json" \
-            /repos/${{github.repository}}/actions/variables \
-            -f name="PACKAGE_RUNID" -f value="${{github.run_id}}"
-      
-      - name: Update vars.PACKAGE_RUNID
-        if: ${{ success() }}
-        run: |
-          gh api --method PATCH \
-            -H "Accept: application/vnd.github.v3+json" \
-            /repos/${{github.repository}}/actions/variables/PACKAGE_RUNID \
-            -f name="PACKAGE_RUNID" -f value="${{github.run_id}}"
- 

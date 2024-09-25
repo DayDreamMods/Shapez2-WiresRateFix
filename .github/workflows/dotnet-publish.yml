@@ -57,8 +57,7 @@ jobs:
         env:
           TCLI_AUTH_TOKEN: ${{ secrets.TCLI_API_TOKEN }}
         run: |
-          dotnet tool uninstall -g tcli
-          dotnet tool install -g tcli
-          dotnet tcli publish --config-path "${{steps.files.outputs.TOML}}" --file "${{steps.files.outputs.TSPKG}}"
+          dotnet tool install tcli
+          dotnet tool run tcli publish --config-path "${{steps.files.outputs.TOML}}" --file "${{steps.files.outputs.TSPKG}}"
           
       

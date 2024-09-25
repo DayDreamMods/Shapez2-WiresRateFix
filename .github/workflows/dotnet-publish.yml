@@ -20,6 +20,9 @@ jobs:
           fetch-depth: 0
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
       - name: Build & Package
         id: run
         run: |
@@ -52,6 +55,7 @@ jobs:
         run: |
           gh release upload ${{ github.event.release.tag_name }} ${{steps.files.outputs.TSPKG}} "${{steps.files.outputs.NUPKG}}"
 
+      - run: npm i @iarna/toml@1.7.1
       - uses: actions/github-script@v7
         id: attain-ts-token
         with:

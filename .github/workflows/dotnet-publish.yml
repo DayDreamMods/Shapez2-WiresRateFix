@@ -7,6 +7,7 @@ on:
 
 jobs:
   publish-it:
+    name: Github Packages, Release Files, & Thunderstore Publishing
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{github.token}}
@@ -41,12 +42,12 @@ jobs:
               core.setOutput('TOML', pkgs[2]);
             }
 
-      - name: Github Nupkg Upload 
+      - name: Publish to Github Packages
         run: |
           dotnet nuget add source --username ${{github.repository_owner}} --password $GH_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{github.repository_owner}}/index.json"
           dotnet nuget push "${{steps.files.outputs.NUPKG}}" --api-key $GH_TOKEN --source "github"
       
-      - name: Upload Release Files
+      - name: Publish to Github Release Files
         if: ${{github.event_name == 'release'}}
         run: |
           gh release upload ${{ github.event.release.tag_name }} ${{steps.files.outputs.TSPKG}} "${{steps.files.outputs.NUPKG}}"
@@ -57,6 +58,6 @@ jobs:
           TCLI_AUTH_TOKEN: ${{ secrets.TCLI_API_TOKEN }}
         run: |
           dotnet tool install -g tcli
-          dotnet tcli publish --config-path "${{steps.files.outputs.TOML}}" --file "${{steps.files.outputs.TSPKG}}"
+          dotnet tool run tcli publish --config-path "${{steps.files.outputs.TOML}}" --file "${{steps.files.outputs.TSPKG}}"
           
       

@@ -57,7 +57,7 @@ jobs:
         env:
           TCLI_AUTH_TOKEN: ${{ secrets.TCLI_API_TOKEN }}
         run: |
-          dotnet tool install tcli
+          dotnet tool install tcli --create-manifest-if-needed
           dotnet tool run tcli publish --config-path "${{steps.files.outputs.TOML}}" --file "${{steps.files.outputs.TSPKG}}"
           
       

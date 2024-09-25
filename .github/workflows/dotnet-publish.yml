@@ -9,7 +9,7 @@ jobs:
   publish-it:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{secrets.ORG_PAT}}
+      GH_TOKEN: ${{github.token}}
     steps:
       - name: Full Repository Checkout
         uses: actions/checkout@v4
@@ -29,7 +29,6 @@ jobs:
         id: files
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.ORG_PAT }}
           script: |
             var pkgs = ("${{steps.run.outputs.last_line}}").trim().split(';');
             if (pkgs.length >= 1) {

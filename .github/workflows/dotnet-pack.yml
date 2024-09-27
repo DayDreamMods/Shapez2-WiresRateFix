@@ -72,10 +72,8 @@ jobs:
       GH_TOKEN: ${{github.token}}
 
     steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: ./
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
 
       - id: attain-file-paths
         run: |

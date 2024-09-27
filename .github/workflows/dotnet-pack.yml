@@ -73,12 +73,12 @@ jobs:
 
     steps:
       - uses: actions/download-artifact@v4
+        with:
+          path: ./
       - uses: actions/checkout@v4
 
       - id: attain-file-paths
         run: |
-          ls -R
-
           nupkgFiles=$(ls "./NUPKG/*.nupkg") 
           tspkgFiles=$(ls "./TSPKG/*.zip")
           tomlFiles=$(ls "./TSPKG/*.toml")

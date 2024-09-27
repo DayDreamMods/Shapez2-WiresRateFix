@@ -86,12 +86,13 @@ jobs:
                     <GameManagedPath>$(STEAMAPPS)${{inputs.gameSteamFolderName}}/${{inputs.gameSteamFolderName}}_Data/Managed/</GameManagedPath>
                     <CommonUnityVersion>${{inputs.commonUnityVersion}}</CommonUnityVersion>
                 
-                    <PackageAuthor>${{vars.TCLI_USERNAME}}</PackageAuthor>
-                    <PackageRepoUrl>https://github.com/${{github.repository}}</PackageRepoUrl>
+                    <ThunderstoreDestination>https://thunderstore.dev</ThunderstoreDestination>
+                    <PackagingAuthor>${{vars.TCLI_USERNAME}}</PackagingAuthor>
                 </PropertyGroup>
                 <ItemGroup>
-                    <PackageCommunities Include="community"/>
-                    <PackageCommunityCategories Include="community"><Value>Mod</Value></PackageCommunityCategories>
+                    <PackagingCommunities Include="test"/>
+                    <PackagingCategories Include="Mod"/>
+                    <PackagingBuildCopies Include="$(OutputPath)$(AssemblyName).dll"><MapTo>/BepInEx/plugins/$(SolutionName)</MapTo></PackagingBuildCopies>
                 </ItemGroup>
 
                 <ItemGroup Label="References">

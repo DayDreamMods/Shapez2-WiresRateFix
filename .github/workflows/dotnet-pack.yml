@@ -38,17 +38,17 @@ jobs:
           last_line=$(tail -n 1 output.log | sed 's/^[   ]*//;s/[    ]*$//')
           echo "PKGS=$last_line" >> $GITHUB_OUTPUT
           if [ -d "$last_line/NUPKG/" ]; then
-            echo "NUPKG='true'" >> $GITHUB_OUTPUT
+            echo "NUPKG=true" >> $GITHUB_OUTPUT
           else
             echo "NUPKG directory not found"
           fi
           if [ -d "$last_line/TSPKG/" ]; then
-            echo "TSPKG='true'" >> $GITHUB_OUTPUT
+            echo "TSPKG=true" >> $GITHUB_OUTPUT
           else
             echo "TSPKG directory not found"
           fi
           if [ -d "$last_line/NMPKG/" ]; then
-            echo "NMPKG='true'" >> $GITHUB_OUTPUT
+            echo "NMPKG=true" >> $GITHUB_OUTPUT
           else
             echo "NMPKG directory not found"
           fi

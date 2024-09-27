@@ -3,15 +3,25 @@ name: "Donet Pack"
 on:
   workflow_dispatch:
   push:
+  release:
+    types: [released, prereleased]
 
 jobs:
-  pack-it-up:
-    if: github.event.repository.is_template == false && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-    name: Package .NET
+  build-it:
+    name: Build .NET Repository
+    if: github.event.repository.is_template == false
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{secrets.ORG_PAT}}
+      GH_TOKEN: ${{github.token}}
+      GH_REPO_URL: https://github.com/${{github.repository}}
+      GH_REPO_GIT_URL: ${{github.repositoryUrl}}
+      GH_REPO_DEFAULT_BRANCH: ${{github.event.repository.default_branch}}
     
+    outputs:
+      NUPKG_AVAILABLE: ${{steps.files.outputs.NUPKG}}
+      TSPKG_AVAILABLE: ${{steps.files.outputs.TSPKG}}
+      NMPKG_AVAILABLE: ${{steps.files.outputs.NMPKG}}
+
     steps:
       - name: Full Repository Checkout
         uses: actions/checkout@v4
@@ -33,25 +43,27 @@ jobs:
         with:
           github-token: ${{ secrets.ORG_PAT }}
           script: |
-            var pkgs = ("${{steps.run.outputs.last_line}}").split(';');
-            if (pkgs.length >= 1) {
-              core.setOutput('NUPKG', pkgs[0]);
-            }
-            if (pkgs.length >= 2) {
-              core.setOutput('TSPKG', pkgs[1]);
-            }
-            if (pkgs.length >= 3) {
-              core.setOutput('TOML', pkgs[2]);
-            }
+            const fs = require('fs');
+            var pkgs = "${{steps.run.outputs.last_line}}";
+            core.setOutput("NUPKG", fs.existsSync(pkgs + "/NUPKG"))
+            core.setOutput("TSPKG", fs.existsSync(pkgs + "/TSPKG"))
+            core.setOutput("NMPKG", fs.existsSync(pkgs + "/NMPKG"))
+            core.setOutput("PKGS", pkgs)
+
       - uses: actions/upload-artifact@v4
+        if: ${{steps.files.outputs.NUPKG}}
         with:
           name: NUPKG
-          path: ${{steps.files.outputs.NUPKG}}
+          path: ${{steps.files.outputs.PKGS}}/NUPKG
+
       - uses: actions/upload-artifact@v4
+        if: ${{steps.files.outputs.TSPKG}}
         with:
           name: TSPKG
-          path: ${{steps.files.outputs.TSPKG}}
+          path: ${{steps.files.outputs.PKGS}}/TSPKG
+
       - uses: actions/upload-artifact@v4
+        if: ${{steps.files.outputs.NMPKG}}
         with:
-          name: TOML
-          path: ${{steps.files.outputs.TOML}}
+          name: NMPKG
+          path: ${{steps.files.outputs.PKGS}}/NMPKG

@@ -9,7 +9,7 @@ on:
 jobs:
   build-it:
     name: Build .NET Repository
-    if: github.event.repository.is_template == false
+    if: ${{github.event.repository.is_template == false}}
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{github.token}}
@@ -18,9 +18,9 @@ jobs:
       GH_REPO_DEFAULT_BRANCH: ${{github.event.repository.default_branch}}
     
     outputs:
-      NUPKG_AVAILABLE: ${{steps.files.outputs.NUPKG}}
-      TSPKG_AVAILABLE: ${{steps.files.outputs.TSPKG}}
-      NMPKG_AVAILABLE: ${{steps.files.outputs.NMPKG}}
+      NUPKG_AVAILABLE: ${{steps.run.outputs.NUPKG}}
+      TSPKG_AVAILABLE: ${{steps.run.outputs.TSPKG}}
+      NMPKG_AVAILABLE: ${{steps.run.outputs.NMPKG}}
 
     steps:
       - name: Full Repository Checkout
@@ -52,21 +52,69 @@ jobs:
           else
             echo "NMPKG directory not found"
           fi
-
       - uses: actions/upload-artifact@v4
         if: ${{steps.run.outputs.NUPKG == 'true'}}
         with:
           name: NUPKG
           path: ${{steps.run.outputs.PKGS}}/NUPKG
-
       - uses: actions/upload-artifact@v4
         if: ${{steps.run.outputs.TSPKG == 'true'}}
         with:
           name: TSPKG
           path: ${{steps.run.outputs.PKGS}}/TSPKG
-
       - uses: actions/upload-artifact@v4
         if: ${{steps.run.outputs.NMPKG == 'true'}}
         with:
           name: NMPKG
           path: ${{steps.run.outputs.PKGS}}/NMPKG
+    
+  publish-it:
+    name: Publish .NET Results
+    needs: build-it
+    if: ${{github.event_name == 'release'}}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        
+      - name: Publish to Github Packages
+        if: ${{needs.build-it.outputs.NUPKG_AVAILABLE == 'true'}}
+        run: |
+          dotnet nuget add source --username ${{github.repository_owner}} --password $GH_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{github.repository_owner}}/index.json"
+          dotnet nuget push "./NUPKG/*.nupkg" --api-key $GH_TOKEN --source "github"
+          gh release upload ${{ github.event.release.tag_name }} "./NUPKG/*.nupkg"
+
+      - name: Publish to Nuget
+        if: ${{needs.build-it.outputs.NUPKG_AVAILABLE == 'true' && github.event.release.prerelease == false}}
+        run: |
+          dotnet nuget push "./NUPKG/*.nupkg" --api-key ${{ secrets.NUGET_API_TOKEN }} --source https://api.nuget.org/v3/index.json
+      
+      - name: Publish to Github Release Files
+        if: ${{needs.build-it.outputs.TSPKG_AVAILABLE == 'true'}}
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} "./TSPKG/*.zip"
+          npm i @iarna/toml@1.7.1
+
+      - uses: actions/github-script@v7
+        if: ${{needs.build-it.outputs.TSPKG_AVAILABLE == 'true'}}
+        id: attain-ts-token
+        with:
+          script: |
+            const fs = require('fs');
+            const toml = require('@iarna/toml');
+            const tomlPath = `./TSPKG/thunderstore.toml`;
+            const fileContent = fs.readFileSync(tomlPath, 'utf8');
+            const parsedToml = toml.parse(fileContent);
+            const repository = parsedToml.publish?.repository;
+            console.log(`Repository: ${repository}`);
+
+            core.setOutput('TCLI_TOKEN', repository.trimEnd('/').endsWith('.dev') ? `${{secrets.TCLI_DEV_API_TOKEN}}` : `${{secrets.TCLI_API_TOKEN}}`)
+
+      - name: Publishing to Thunderstore
+        if: ${{needs.build-it.outputs.TSPKG_AVAILABLE == 'true' && github.event.release.prerelease == false}}
+        env:
+          TCLI_AUTH_TOKEN: ${{ steps.attain-ts-token.outputs.TCLI_TOKEN }}
+        run: |
+          zipFiles=(./TSPKG/*.zip)
+          dotnet tool install tcli --create-manifest-if-needed
+          dotnet tool run tcli publish --config-path "./TSPKG/thunderstore.toml" --file "${zipFiles[0]}"

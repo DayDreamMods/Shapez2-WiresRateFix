@@ -77,6 +77,8 @@ jobs:
 
       - id: attain-file-paths
         run: |
+          ls -R
+
           nupkgFiles=$(ls "./NUPKG/*.nupkg") 
           tspkgFiles=$(ls "./TSPKG/*.zip")
           tomlFiles=$(ls "./TSPKG/*.toml")

@@ -77,10 +77,10 @@ jobs:
 
       - id: attain-file-paths
         run: |
-          nupkgFiles=(./NUPKG/*.nupkg) 
-          tspkgFiles=(./TSPKG/*.zip)
-          tomlFiles=(./TSPKG/*.toml)
-          nmpkgFiles=(./NMPKG/*.zip)
+          nupkgFiles=$(ls "./NUPKG/*.nupkg") 
+          tspkgFiles=$(ls "./TSPKG/*.zip")
+          tomlFiles=$(ls "./TSPKG/*.toml")
+          nmpkgFiles=$(ls "./NMPKG/*.zip")
           if [ ${#nupkgFiles[@]} -eq 0 ]; then
             echo "No './NUPKG/*.nupkg' Files"
           else

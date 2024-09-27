@@ -77,30 +77,30 @@ jobs:
 
       - id: attain-file-paths
         run: |
-          nupkgFiles=$(ls "./NUPKG/*.nupkg") 
-          tspkgFiles=$(ls "./TSPKG/*.zip")
-          tomlFiles=$(ls "./TSPKG/*.toml")
-          nmpkgFiles=$(ls "./NMPKG/*.zip")
-          if [ ${#nupkgFiles[@]} -eq 0 ]; then
-            echo "No './NUPKG/*.nupkg' Files"
-          else
-            echo "NUPKG=${nupkgFiles[0]}" >> $GITHUB_OUTPUT
-          fi
-          if [ ${#tspkgFiles[@]} -eq 0 ]; then
-            echo "No './TSPKG/*.zip' Files"
-          else
-            echo "TSPKG=${tspkgFiles[0]}" >> $GITHUB_OUTPUT
-          fi
-          if [ ${#tomlFiles[@]} -eq 0 ]; then
-            echo "No './TSPKG/*.toml' Files"
-          else
-            echo "TSTOML=${tomlFiles[0]}" >> $GITHUB_OUTPUT
-          fi
-          if [ ${#nmpkgFiles[@]} -eq 0 ]; then
-            echo "No './NMPKG/*.zip' Files"
-          else
-            echo "NMPKG=${nmpkgFiles[0]}" >> $GITHUB_OUTPUT
-          fi
+          for file in ./NUPKG/*.nupkg; do
+            if [ -e "$file" ]; then
+              echo "NUPKG=$file" >> $GITHUB_OUTPUT
+              break
+            fi
+          done
+          for file in ./TSPKG/*.zip; do
+            if [ -e "$file" ]; then
+              echo "TSPKG=$file" >> $GITHUB_OUTPUT
+              break
+            fi
+          done
+          for file in ./TSPKG/*.toml; do
+            if [ -e "$file" ]; then
+              echo "TSTOML=$file" >> $GITHUB_OUTPUT
+              break
+            fi
+          done
+          for file in ./NMPKG/*.zip; do
+            if [ -e "$file" ]; then
+              echo "NMPKG=$file" >> $GITHUB_OUTPUT
+              break
+            fi
+          done
         
       - name: Publish to Github Packages
         if: ${{steps.attain-file-paths.outputs.NUPKG != ''}}

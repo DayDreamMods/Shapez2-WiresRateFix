@@ -35,7 +35,7 @@ jobs:
         id: run
         run: |
           dotnet pack --configuration Release | tee output.log
-          last_line=$(tail -n 1 output.log)
+          last_line=$(tail -n 1 output.log | sed 's/^[   ]*//;s/[    ]*$//')
           echo "PKGS=$last_line" >> $GITHUB_OUTPUT
           if [ -d "$last_line/NUPKG/" ]; then
             echo "NUPKG='true'" >> $GITHUB_OUTPUT

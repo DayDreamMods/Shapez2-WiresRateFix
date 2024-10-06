@@ -39,10 +39,10 @@ jobs:
           script: |
             const fs = require('fs');
             var jsonData = JSON.parse(`${{steps.run.outputs.LASTLINE}}`);
-            core.setOutput("PublishNUPKG", jsonData.PublishNUPKG && fs.existsSync(jsonData.OutputDirectory + "/NUPKG"))
-            core.setOutput("PublishTSPKG", jsonData.PublishTSPKG && fs.existsSync(jsonData.OutputDirectory + "/TSPKG"))
-            core.setOutput("PublishNMPKG", jsonData.PublishNMPKG && fs.existsSync(jsonData.OutputDirectory + "/NMPKG"))
-            core.setOutput("PKGSDIR", jsonData.OutputDirectory))
+            core.setOutput("PublishNUPKG", jsonData.PublishNUPKG && fs.existsSync(jsonData.OutputDirectory + "/NUPKG"));
+            core.setOutput("PublishTSPKG", jsonData.PublishTSPKG && fs.existsSync(jsonData.OutputDirectory + "/TSPKG"));
+            core.setOutput("PublishNMPKG", jsonData.PublishNMPKG && fs.existsSync(jsonData.OutputDirectory + "/NMPKG"));
+            core.setOutput("PKGSDIR", jsonData.OutputDirectory);
 
       - uses: actions/upload-artifact@v4
         if: ${{steps.attain-fileinfo.outputs.PublishNUPKG == 'true'}}

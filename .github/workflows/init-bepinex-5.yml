@@ -99,8 +99,8 @@ jobs:
                 
                     <ThunderstoreDestination>https://thunderstore.dev</ThunderstoreDestination>
                     <PackagingAuthor>${{vars.TCLI_USERNAME}}</PackagingAuthor>
-                    <PackagingReturns Condition="'${{inputs.publishNupkg}}' == 'true'">NUPKG</PackagingReturns>
-                    <PackagingReturns Condition="'${{inputs.publishTSpkg}}' == 'true'">TSPKG</PackagingReturns>
+                    <PackagingReturnsNUPKG>${{inputs.publishNupkg}}</PackagingReturns>
+                    <PackagingReturnsTSPKG>${{inputs.publishTSpkg}}</PackagingReturns>
                 </PropertyGroup>
                 <ItemGroup>
                     <PackagingCommunities Include="test"/>

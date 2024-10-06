@@ -34,7 +34,6 @@ jobs:
           echo "LASTLINE=$last_line" >> $GITHUB_OUTPUT
         
       - uses: actions/github-script@v7
-        if: ${{steps.attain-file-paths.outputs.TSTOML != ''}}
         id: attain-fileinfo
         with:
           script: |

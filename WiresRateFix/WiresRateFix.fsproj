@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <RootNamespace>WiresRateFix</RootNamespace>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+        <BuildGameLibs>true</BuildGameLibs>
+        <BuildFromGameLibs>false</BuildFromGameLibs>
+
+        <GameManagedPath>$(STEAMAPPS)shapez 2/shapez 2_Data/Managed/</GameManagedPath>
+        <CommonUnityVersion>2022.3.42</CommonUnityVersion>
+    
+        <ThunderstoreDestination>https://thunderstore.dev</ThunderstoreDestination>
+        <PackagingAuthor>wwwDayDream</PackagingAuthor>
+        <PackagingReturnsNUPKG>false</PackagingReturnsNUPKG>
+        <PackagingReturnsTSPKG>true</PackagingReturnsTSPKG>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackagingCommunities Include="test"/>
+        <PackagingBuildCopies Include="$(OutputPath)$(AssemblyName).dll"><MapTo>/BepInEx/plugins/$(SolutionName)</MapTo></PackagingBuildCopies>
+    </ItemGroup>
+
+    <ItemGroup Label="References">
+        <!-- <ShoddyReference Include="$(GameManagedPath)Assembly.dll"/> -->
+    </ItemGroup>
+    
+    <ItemGroup Label="F# Compile Order" Condition="'.fs' == '.fs'">
+        <Compile Include="../dotnet-common/FS/Utils.fs" />
+        <Compile Include="WiresRateFixPlugin.fs" />
+    </ItemGroup>
+
+    <Import Project="../dotnet-common/MSBuild/BepInEx5.props" />
+    <Import Project="../dotnet-common/MSBuild/Common.targets" />
+    <Import Project="../dotnet-common/MSBuild/PluginInfoProps.FS.targets" />
+    <Import Project="../dotnet-common/MSBuild/Packaging.TCLI.targets" />
+    <Import Project="../dotnet-common/MSBuild/ShoddyGameLibs.lite.targets" />
+</Project>

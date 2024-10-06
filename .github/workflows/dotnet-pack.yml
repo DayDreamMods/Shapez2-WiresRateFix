@@ -31,37 +31,35 @@ jobs:
         run: |
           dotnet pack --configuration Release | tee output.log
           last_line=$(tail -n 1 output.log | sed 's/^[   ]*//;s/[    ]*$//')
-          echo "PKGS=$last_line" >> $GITHUB_OUTPUT
-          if [ -d "$last_line/NUPKG/" ]; then
-            echo "NUPKG=true" >> $GITHUB_OUTPUT
-          else
-            echo "NUPKG directory not found"
-          fi
-          if [ -d "$last_line/TSPKG/" ]; then
-            echo "TSPKG=true" >> $GITHUB_OUTPUT
-          else
-            echo "TSPKG directory not found"
-          fi
-          if [ -d "$last_line/NMPKG/" ]; then
-            echo "NMPKG=true" >> $GITHUB_OUTPUT
-          else
-            echo "NMPKG directory not found"
-          fi
+          echo "LASTLINE=$last_line" >> $GITHUB_OUTPUT
+        
+      - uses: actions/github-script@v7
+        if: ${{steps.attain-file-paths.outputs.TSTOML != ''}}
+        id: attain-fileinfo
+        with:
+          script: |
+            const fs = require('fs');
+            var jsonData = JSON.parse(`${{steps.run.outputs.LASTLINE}}`);
+            core.setOutput("PublishNUPKG", jsonData.PublishNUPKG && fs.existsSync(jsonData.OutputDirectory + "/NUPKG"))
+            core.setOutput("PublishTSPKG", jsonData.PublishTSPKG && fs.existsSync(jsonData.OutputDirectory + "/TSPKG"))
+            core.setOutput("PublishNMPKG", jsonData.PublishNMPKG && fs.existsSync(jsonData.OutputDirectory + "/NMPKG"))
+            core.setOutput("PKGSDIR", jsonData.OutputDirectory))
+
       - uses: actions/upload-artifact@v4
-        if: ${{steps.run.outputs.NUPKG == 'true'}}
+        if: ${{steps.attain-fileinfo.outputs.PublishNUPKG == 'true'}}
         with:
           name: NUPKG
-          path: ${{steps.run.outputs.PKGS}}/NUPKG
+          path: ${{steps.attain-fileinfo.outputs.PKGSDIR}}/NUPKG
       - uses: actions/upload-artifact@v4
-        if: ${{steps.run.outputs.TSPKG == 'true'}}
+        if: ${{steps.attain-fileinfo.outputs.PublishTSPKG == 'true'}}
         with:
           name: TSPKG
-          path: ${{steps.run.outputs.PKGS}}/TSPKG
+          path: ${{steps.attain-fileinfo.outputs.PKGSDIR}}/TSPKG
       - uses: actions/upload-artifact@v4
-        if: ${{steps.run.outputs.NMPKG == 'true'}}
+        if: ${{steps.attain-fileinfo.outputs.PublishNMPKG == 'true'}}
         with:
           name: NMPKG
-          path: ${{steps.run.outputs.PKGS}}/NMPKG
+          path: ${{steps.attain-fileinfo.outputs.PKGSDIR}}/NMPKG
     
   publish-it:
     name: Publish .NET Results

@@ -11,18 +11,22 @@
         <GameManagedPath>$(STEAMAPPS)shapez 2/shapez 2_Data/Managed/</GameManagedPath>
         <CommonUnityVersion>2022.3.42</CommonUnityVersion>
     
-        <ThunderstoreDestination>https://thunderstore.dev</ThunderstoreDestination>
+        <ThunderstoreDestination>https://thunderstore.io</ThunderstoreDestination>
         <PackagingAuthor>wwwDayDream</PackagingAuthor>
         <PackagingReturnsNUPKG>false</PackagingReturnsNUPKG>
         <PackagingReturnsTSPKG>true</PackagingReturnsTSPKG>
     </PropertyGroup>
     <ItemGroup>
-        <PackagingCommunities Include="test"/>
-        <PackagingBuildCopies Include="$(OutputPath)$(AssemblyName).dll"><MapTo>/BepInEx/plugins/$(SolutionName)</MapTo></PackagingBuildCopies>
+        <PackagingCommunities Include="shapez-2"/>
+        <PackagingCategories Include="Mods"/>
+        <PackagingCategories Include="Misc"/>
+        <PackagingBuildCopies Include="$(OutputPath)$(AssemblyName).dll"><MapTo>/BepInEx/plugins/$(SolutionName)/</MapTo></PackagingBuildCopies>
+        <PackagingBuildCopies Condition="'.fs' == '.fs'" Include="$(OutputPath)FSharp.Core.dll"><MapTo>/BepInEx/core/</MapTo></PackagingBuildCopies>
     </ItemGroup>
 
     <ItemGroup Label="References">
-        <!-- <ShoddyReference Include="$(GameManagedPath)Assembly.dll"/> -->
+        <ShoddyReference Include="$(GameManagedPath)SPZGameAssembly.dll"/>
+        <ShoddyReference Include="$(GameManagedPath)Unity.Core.dll"/>
     </ItemGroup>
     
     <ItemGroup Label="F# Compile Order" Condition="'.fs' == '.fs'">

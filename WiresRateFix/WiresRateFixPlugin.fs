@@ -30,4 +30,12 @@ type WiresRateFixPlugin() =
                 $"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded! Successfully patched {patchedMethodCount} method{patchedMethodSuffix}."
                 |> logger.LogInfo
             return ()
-        }
+        } 
+        
+[<HarmonyPatch(typeof<SimulationGraph>)>]
+module SimulationGraphPatcher =
+    [<HarmonyPatch("<Update>g__UpdateCluster|29_1")>] [<HarmonyPrefix>]
+    let PrepareStartOptionsOverride (requiredDeltaTicks: int byref, __instance: SimulationGraph) =
+        requiredDeltaTicks <- 0
+        ()
+        

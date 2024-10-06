@@ -1,5 +1,5 @@
-# WiresRateFix
-This makes wire networks that are out of view update at the same rate as the ones you're currently looking at.
+# 
+
 
 ### Support
 Please reach out on Discord: [Daydreaming](https://discord.gg/Mherqbcmep), or create an issue on the repository here!

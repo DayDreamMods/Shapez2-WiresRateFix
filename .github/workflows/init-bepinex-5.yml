@@ -104,7 +104,8 @@ jobs:
                 </PropertyGroup>
                 <ItemGroup>
                     <PackagingCommunities Include="test"/>
-                    <PackagingBuildCopies Include="$(OutputPath)$(AssemblyName).dll"><MapTo>/BepInEx/plugins/$(SolutionName)</MapTo></PackagingBuildCopies>
+                    <PackagingBuildCopies Include="$(OutputPath)$(AssemblyName).dll"><MapTo>/BepInEx/plugins/$(SolutionName)/</MapTo></PackagingBuildCopies>
+                    <PackagingBuildCopies Condition="'${{steps.run.outputs.languageExtension}}' == '.fs'" Include="$(OutputPath)FSharp.Core.dll"><MapTo>/BepInEx/core/</MapTo></PackagingBuildCopies>
                 </ItemGroup>
 
                 <ItemGroup Label="References">

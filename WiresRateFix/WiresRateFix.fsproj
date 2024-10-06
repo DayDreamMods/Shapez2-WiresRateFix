@@ -20,6 +20,7 @@
         <PackagingCommunities Include="shapez-2"/>
         <PackagingCategories Include="Mods"/>
         <PackagingCategories Include="Misc"/>
+        <PackagingDependencies Include="BepInEx-BepInExPack"><DepVersion>5.4.2100</DepVersion></PackagingDependencies>
         <PackagingBuildCopies Include="$(OutputPath)$(AssemblyName).dll"><MapTo>/BepInEx/plugins/$(SolutionName)/</MapTo></PackagingBuildCopies>
         <PackagingBuildCopies Condition="'.fs' == '.fs'" Include="$(OutputPath)FSharp.Core.dll"><MapTo>/BepInEx/core/</MapTo></PackagingBuildCopies>
     </ItemGroup>

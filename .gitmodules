@@ -2,3 +2,4 @@
 	path = dotnet-common
 	url = https://github.com/DayDreamMods/dotnet-common
 	branch = main
+	update = rebase

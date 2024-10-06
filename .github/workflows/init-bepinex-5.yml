@@ -23,6 +23,17 @@ on:
         default: 'Game'
         required: false
         type: string
+      publishNupkg:
+        description: 'To publish to Nuget/Github or not.'
+        default: false
+        required: false
+        type: boolean
+      publishTSpkg:
+        description: 'To publish to Thunderstore or not.'
+        default: false
+        required: false
+        type: boolean
+
       name:
         description: 'The name of the solution and project.'
         type: string
@@ -88,10 +99,11 @@ jobs:
                 
                     <ThunderstoreDestination>https://thunderstore.dev</ThunderstoreDestination>
                     <PackagingAuthor>${{vars.TCLI_USERNAME}}</PackagingAuthor>
+                    <PackagingReturns Condition="'${{inputs.publishNupkg}}' == 'true'">NUPKG</PackagingReturns>
+                    <PackagingReturns Condition="'${{inputs.publishTSpkg}}' == 'true'">TSPKG</PackagingReturns>
                 </PropertyGroup>
                 <ItemGroup>
                     <PackagingCommunities Include="test"/>
-                    <PackagingCategories Include="Mod"/>
                     <PackagingBuildCopies Include="$(OutputPath)$(AssemblyName).dll"><MapTo>/BepInEx/plugins/$(SolutionName)</MapTo></PackagingBuildCopies>
                 </ItemGroup>
 

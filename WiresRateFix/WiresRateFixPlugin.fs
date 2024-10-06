@@ -23,7 +23,7 @@ type WiresRateFixPlugin() =
         -optional {
             let! patcher = Patcher
             let! logger = Logger
-            patcher.PatchAll()
+            do patcher.PatchAll()
             let patchedMethodCount = patcher.GetPatchedMethods() |> Array.ofSeq |> (_.Length)
             let patchedMethodSuffix = if patchedMethodCount = 1 then "" else "s"
             do 
